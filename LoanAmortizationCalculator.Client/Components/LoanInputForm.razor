@@ -1,0 +1,59 @@
+﻿@using LoanAmortizationCalculator.Client.ViewModels
+
+<MudPaper Elevation="0" Class="pa-4">
+    <EditForm Model="@_viewModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+
+        <MudStack Spacing="4">
+            <MudNumericField @bind-Value="_viewModel.Amount"
+                             Label="Loan Amount (€)"
+                             Format="N2"
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
+                             AdornmentIcon="@Icons.Material.Filled.Euro"
+                             HideSpinButtons="true" />
+
+            <MudNumericField @bind-Value="_viewModel.InterestRate"
+                             Label="Interest Rate (%)"
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.End"
+                             AdornmentText="%"
+                             Step="0.1M" />
+
+            <MudSlider @bind-Value="_viewModel.DurationYears"
+                       Min="1" Max="35"
+                       Step="1"
+                       Color="Color.Primary"
+                       ValueLabel="true">
+                Duration: @_viewModel.DurationYears Years
+            </MudSlider>
+
+            <MudDatePicker Label="Start Date"
+                           @bind-Date="_viewModel.StartDate"
+                           Variant="Variant.Outlined" />
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       StartIcon="@Icons.Material.Filled.Calculate"
+                       Class="mt-4">
+                Calculate
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    private LoanInputViewModel _viewModel = new();
+
+    // Event sent to parent
+    [Parameter] public EventCallback<LoanInput> OnCalculate { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        // Convert ViewModel to Domain Model and send up
+        var domainModel = _viewModel.ToDomainModel();
+        await OnCalculate.InvokeAsync(domainModel);
+    }
+}

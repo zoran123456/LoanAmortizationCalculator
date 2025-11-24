@@ -1,0 +1,37 @@
+﻿@using LoanAmortizationCalculator.Core.Domain
+
+@if (Schedule == null || !Schedule.Any()) return;
+
+<MudDataGrid Items="@Schedule"
+             Virtualize="true"
+             Height="400px"
+             FixedHeader="true"
+             Hover="true"
+             Striped="true"
+             Dense="true">
+    <Columns>
+        <PropertyColumn Property="x => x.MonthIndex" Title="#" />
+
+        <PropertyColumn Property="x => x.Date" Title="Date" Format="MM/yyyy" />
+
+        <PropertyColumn Property="x => x.Payment" Title="Payment" Format="N2" />
+
+        <PropertyColumn Property="x => x.Principal" Title="Principal" Format="N2">
+            <CellTemplate>
+                <MudText Color="Color.Success">@context.Item.Principal.ToString("N2")</MudText>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.Interest" Title="Interest" Format="N2">
+            <CellTemplate>
+                <MudText Color="Color.Error">@context.Item.Interest.ToString("N2")</MudText>
+            </CellTemplate>
+        </PropertyColumn>
+
+        <PropertyColumn Property="x => x.RemainingBalance" Title="Balance" Format="N2" />
+    </Columns>
+</MudDataGrid>
+
+@code {
+    [Parameter] public List<AmortizationRow>? Schedule { get; set; }
+}

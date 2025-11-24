@@ -1,0 +1,127 @@
+﻿@page "/"
+@using LoanAmortizationCalculator.Client.Components
+@using LoanAmortizationCalculator.Client.Services
+@using LoanAmortizationCalculator.Core.Domain
+@implements IDisposable
+
+@inject LoanStateService StateService
+@inject IJSRuntime JS
+
+<PageTitle>Loan Calculator</PageTitle>
+
+<div class="no-print">
+    @if (StateService.CurrentResult == null)
+    {
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10">
+            <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
+                Please enter your loan details in the menu on the left and click <strong>Calculate</strong>.
+            </MudAlert>
+        </MudContainer>
+    }
+    else
+    {
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+
+            <div class="d-flex justify-space-between align-center mb-4">
+                <MudText Typo="Typo.h4">Calculation Results</MudText>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Print"
+                           OnClick="PrintReport">
+                    Print / Save PDF
+                </MudButton>
+            </div>
+
+            <SummaryCards Result="@StateService.CurrentResult" />
+
+            <MudDivider Class="my-6" />
+
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                <MudTabPanel Text="Amortization Schedule" Icon="@Icons.Material.Filled.TableChart">
+                    <AmortizationTable Schedule="@StateService.CurrentResult.Schedule" />
+                </MudTabPanel>
+
+                <MudTabPanel Text="Visualizations" Icon="@Icons.Material.Filled.PieChart">
+                    <MudGrid Class="mt-4">
+                        <MudItem xs="12">
+                            <LoanPaymentChart Schedule="@StateService.CurrentResult.Schedule" />
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+            </MudTabs>
+
+        </MudContainer>
+    }
+</div>
+
+@if (StateService.CurrentResult != null)
+{
+    <div class="printable-report">
+        <h1>Loan Amortization Report</h1>
+        <p>Date: @DateTime.Now.ToString("g")</p>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; border: 1px solid #ccc; padding: 10px;">
+            <div>
+                <strong>Monthly Payment:</strong><br />
+                @StateService.CurrentResult.MonthlyPayment.ToString("N2") €
+            </div>
+            <div>
+                <strong>Total Interest:</strong><br />
+                @StateService.CurrentResult.TotalInterestPaid.ToString("N2") €
+            </div>
+            <div>
+                <strong>Total Paid:</strong><br />
+                @StateService.CurrentResult.TotalAmountPaid.ToString("N2") €
+            </div>
+            <div>
+                <strong>Payoff Date:</strong><br />
+                @StateService.CurrentResult.PayoffDate.ToString("MMM yyyy")
+            </div>
+        </div>
+
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Payment</th>
+                    <th>Principal</th>
+                    <th>Interest</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in StateService.CurrentResult.Schedule)
+                {
+                    <tr>
+                        <td>@row.MonthIndex</td>
+                        <td>@row.Date.ToString("MM/yyyy")</td>
+                        <td>@row.Payment.ToString("N2")</td>
+                        <td>@row.Principal.ToString("N2")</td>
+                        <td>@row.Interest.ToString("N2")</td>
+                        <td>@row.RemainingBalance.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        StateService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        StateService.OnChange -= StateHasChanged;
+    }
+
+    private async Task PrintReport()
+    {
+        // Calls window.print()
+        await JS.InvokeVoidAsync("printReport");
+    }
+}

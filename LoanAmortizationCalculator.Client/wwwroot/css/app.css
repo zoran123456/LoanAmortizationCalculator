@@ -1,0 +1,77 @@
+﻿/* --- 1. SCREEN --- */
+/* This ensures that the report is NOT VISIBLE while working in the application */
+.printable-report {
+    display: none !important;
+}
+
+/* --- 2. PRINT MEDIA --- */
+@media print {
+
+    /* Hide scrollbars so they don't interfere */
+    body {
+        overflow: visible !important;
+    }
+
+        /* TECHNIQUE: Hide ALL elements on the page using visibility */
+        /* We don't use display:none because it destroys the structure */
+        body * {
+            visibility: hidden;
+        }
+
+    /* ...but RESTORE visibility only to our report and its children */
+    .printable-report,
+    .printable-report * {
+        visibility: visible !important;
+    }
+
+    /* Position report at the top of the paper, above everything else */
+    .printable-report {
+        display: block !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: white;
+    }
+
+    /* --- TABLE STYLING --- */
+    table.print-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: black !important;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+    }
+
+        table.print-table th {
+            border: 1px solid #000;
+            background-color: #f0f0f0 !important; /* Gray background for headers */
+            color: black !important;
+            padding: 5px;
+            text-align: center;
+            -webkit-print-color-adjust: exact; /* Chrome/Edge: Print colors */
+            print-color-adjust: exact; /* Firefox: Print colors */
+        }
+
+        table.print-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: right;
+            color: black !important;
+        }
+
+            /* Center alignment for first two columns (Index and Date) */
+            table.print-table td:nth-child(1),
+            table.print-table td:nth-child(2) {
+                text-align: center;
+            }
+
+    /* Headings */
+    .printable-report h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: black !important;
+    }
+}

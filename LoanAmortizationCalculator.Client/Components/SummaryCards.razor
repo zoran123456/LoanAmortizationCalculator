@@ -1,0 +1,30 @@
+﻿@using LoanAmortizationCalculator.Core.Domain
+
+@if (Result == null) return;
+
+<MudGrid Class="mb-4">
+    <MudItem xs="12" sm="4">
+        <MudPaper Class="pa-4 d-flex flex-column align-center justify-center mud-theme-primary" Elevation="3">
+            <MudText Typo="Typo.subtitle2">Monthly Payment</MudText>
+            <MudText Typo="Typo.h4">@Result.MonthlyPayment.ToString("N2") €</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudPaper Class="pa-4 d-flex flex-column align-center justify-center" Elevation="3">
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Total Interest</MudText>
+            <MudText Typo="Typo.h5" Color="Color.Secondary">@Result.TotalInterestPaid.ToString("N2") €</MudText>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudPaper Class="pa-4 d-flex flex-column align-center justify-center" Elevation="3">
+            <MudText Typo="Typo.subtitle2">Payoff Date</MudText>
+            <MudText Typo="Typo.h5">@Result.PayoffDate.ToString("MMMM yyyy")</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter] public LoanResult? Result { get; set; }
+}

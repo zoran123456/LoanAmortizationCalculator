@@ -1,0 +1,88 @@
+﻿@using LoanAmortizationCalculator.Core.Domain
+@using ApexCharts
+
+
+<MudPaper Class="pa-4" Elevation="3">
+    <MudText Typo="Typo.h6" Align="MudBlazor.Align.Center" Class="mb-4">Payment Composition Over Time</MudText>
+
+    @if (Schedule != null && Schedule.Any())
+    {
+        <ApexChart TItem="AmortizationRow"
+                   Title="Principal vs Interest"
+                   Height="500"
+                   @ref="_chart"
+                   Options="_options">
+
+            <ApexPointSeries TItem="AmortizationRow"
+                             Items="Schedule"
+                             Name="Interest"
+                             SeriesType="SeriesType.Area"
+                             XValue="@(e => e.Date.ToString("yyyy-MM"))"
+                             YValue="@(e => e.Interest)"
+                             Color="#F44336" />
+
+            <ApexPointSeries TItem="AmortizationRow"
+                             Items="Schedule"
+                             Name="Principal"
+                             SeriesType="SeriesType.Area"
+                             XValue="@(e => e.Date.ToString("yyyy-MM"))"
+                             YValue="@(e => e.Principal)"
+                             Color="#4CAF50" />
+        </ApexChart>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public List<AmortizationRow>? Schedule { get; set; }
+
+    private ApexChart<AmortizationRow>? _chart;
+    private ApexChartOptions<AmortizationRow> _options = new();
+
+    protected override void OnInitialized()
+    {
+        // Configure chart options for better UX
+        _options.Chart = new Chart
+        {
+            Toolbar = new Toolbar { Show = false }, // Hide the zoom menu for cleaner look
+            Zoom = new Zoom { Enabled = false }
+        };
+
+        _options.Xaxis = new XAxis
+        {
+            Type = XAxisType.Datetime, // Ensures dates are handled correctly
+            Labels = new XAxisLabels { Format = "yyyy" } // Show years on X axis
+        };
+
+        _options.Yaxis = new List<YAxis>
+        {
+            new YAxis
+            {
+                Labels = new YAxisLabels
+                {
+                    Formatter = @"function (value) { return value.toFixed(0) + ' €'; }"
+                }
+            }
+        };
+
+        _options.Tooltip = new Tooltip
+        {
+            Y = new TooltipY
+            {
+                Formatter = @"function(value) { return value.toFixed(2) + ' €'; }"
+            }
+        };
+
+        // Stacked Area Chart effect
+        _options.Stroke = new Stroke { Curve = Curve.Smooth, Width = 2 };
+        _options.Fill = new Fill { Type = new List<FillType> { FillType.Gradient } };
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_chart != null && Schedule != null)
+        {
+            // "true" means animate the update
+            await _chart.UpdateSeriesAsync(true);
+        }
+    }
+}
