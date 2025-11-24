@@ -3,6 +3,9 @@
 A high-precision, client-side **FinTech application** built with **.NET 8 Blazor WebAssembly**. 
 This project demonstrates Clean Architecture principles, financial mathematics precision, and performant UI rendering for complex data sets.
 
+<img width="1031" height="592" alt="image" src="https://github.com/user-attachments/assets/909cbb5e-098c-41a1-9423-839d7ea65c2e" />
+
+
 ## 🚀 Tech Stack & Libraries
 
 * **Framework:** .NET 8 Blazor WebAssembly (Standalone / Client-side only)
