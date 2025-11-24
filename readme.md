@@ -41,7 +41,7 @@ The solution follows a **Simplified Clean Architecture** approach suitable for S
 
 2.  **Clone and Run:**
     ```bash
-    git clone [repository-url]
+    git clone https://github.com/zoran123456/LoanAmortizationCalculator.git
     cd LoanAmortizationCalculator
     dotnet run --project LoanAmortizationCalculator.Client
     ```
